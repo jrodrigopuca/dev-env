@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  mdb1:
+    image: mongo:latest
+    container_name: mdb1
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MDB01_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MDB01_PASS}
+      MDB_DATABASE: ${MDB01_DB}
+      MDB_COLLECTION_STARTER: ${MDB01_COLLECTION}
+    volumes:
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASS}
+      REDIS_FIRST_DATA: ${REDIS_FIRST_DATA}
+    command: ["sh", "-c", "/scripts/redis-init.sh"]
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASS}
+      MYSQL_TABLE: ${MYSQL_TABLE}
+    volumes:
+      - ./scripts/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
+  test-connector:
+    image: alpine:latest
+    container_name: test-connector
+    depends_on:
+      - mdb1
+      - mdb2
+      - redis
+      - mysql
+    volumes:
+      - ./scripts/test-connector.sh:test-connector.sh
+    command: ["sh", "-c", "chmod +x /test-connector.sh && /test-connector.sh"]
