@@ -1,9 +1,11 @@
 #!/bin/bash
 
 # Define local folders
+: <<'COMMENT'
 data_folders=("mdb1-data" "redis-data" "mysql-data")
 
 # Create folder if folder doesn't exist
+
 for folder in "data/${data_folders[@]}"; do
     if [ ! -d "./$folder" ]; then
         mkdir "./$folder"
@@ -12,6 +14,7 @@ for folder in "data/${data_folders[@]}"; do
         echo "La carpeta $folder ya existe, no es necesario crearla."
     fi
 done
+COMMENT
 
 # Run docker compose
 docker-compose --env-file .env up -d

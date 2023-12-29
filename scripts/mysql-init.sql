@@ -4,7 +4,7 @@
 USE ${MYSQL_DATABASE};
 
 -- Check if the table exists
-IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = '${MYSQL_DATABASE}' AND table_name = '${MYSQL_TABLE}') THEN
+IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = ${MYSQL_DATABASE} AND table_name = ${MYSQL_TABLE}) THEN
     -- Create the table
     CREATE TABLE ${MYSQL_TABLE} (
         id INT AUTO_INCREMENT PRIMARY KEY,

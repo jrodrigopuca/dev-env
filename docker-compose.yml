@@ -13,7 +13,7 @@ services:
       MDB_COLLECTION_STARTER: ${MDB01_COLLECTION}
     volumes:
       - ./data/mdb1-data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./scripts/mdb-init.js:/docker-entrypoint-initdb.d/mdb-init.js
 
   redis:
     image: redis:latest
@@ -23,11 +23,10 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASS}
       REDIS_FIRST_DATA: ${REDIS_FIRST_DATA}
-    command: ["sh", "-c", "/scripts/redis-init.sh"]
+    command: ["sh", "-c", "chmod +x /redis-init.sh && /redis-init.sh && redis-server"]
     volumes:
       - ./data/redis-data:/data
-      - ./scripts/redis-init.sh:/data/redis-init.sh:ro
-
+      - ./scripts/redis-init.sh:/redis-init.sh
   mysql:
     image: mysql:latest
     container_name: mysql
@@ -35,6 +34,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASS}
       MYSQL_TABLE: ${MYSQL_TABLE}
@@ -47,9 +47,8 @@ services:
     container_name: test-connector
     depends_on:
       - mdb1
-      - mdb2
       - redis
       - mysql
     volumes:
-      - ./scripts/test-connector.sh:test-connector.sh
-    command: ["sh", "-c", "chmod +x /test-connector.sh && /test-connector.sh"]
+      - ./scripts/test-connector.sh:/connector.sh
+    command: ["sh", "-c", "chmod +x /connector.sh && /connector.sh"]
