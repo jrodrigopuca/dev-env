@@ -12,6 +12,7 @@ services:
       MDB_DATABASE: ${MDB01_DB}
       MDB_COLLECTION_STARTER: ${MDB01_COLLECTION}
     volumes:
+      - ./data/mdb1-data:/data/db
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
 
   redis:
@@ -23,6 +24,9 @@ services:
       REDIS_PASSWORD: ${REDIS_PASS}
       REDIS_FIRST_DATA: ${REDIS_FIRST_DATA}
     command: ["sh", "-c", "/scripts/redis-init.sh"]
+    volumes:
+      - ./data/redis-data:/data
+      - ./scripts/redis-init.sh:/data/redis-init.sh:ro
 
   mysql:
     image: mysql:latest
@@ -35,7 +39,9 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASS}
       MYSQL_TABLE: ${MYSQL_TABLE}
     volumes:
+      - ./data/mysql-data:/var/lib/mysql
       - ./scripts/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
+
   test-connector:
     image: alpine:latest
     container_name: test-connector
